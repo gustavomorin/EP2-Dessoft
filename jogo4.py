@@ -15,7 +15,7 @@ print('\ndica          - entra no mercado de dicas')
 print('desisto       - desiste da rodada')
 print('inventario    - exibe sua posição')
 
-while palpite.lower() != 'desisto':
+while palpite != 'desisto':
 
     dados_paises = normaliza(dados)
     sorteado = sorteia_pais(dados_paises)
@@ -33,7 +33,6 @@ while palpite.lower() != 'desisto':
             break
         
         elif palpite == 'desisto':
-            print('Que deselegante desistir, o pais era: {0}'.format(sorteado))
             desistencia = input('Tem certeza de que quer desistir da rodada? [s/n]')
             if desistencia == 's':
                 print ('Que deselegante desistir, o pais era: {0}'.format(sorteado))
@@ -87,15 +86,18 @@ while palpite.lower() != 'desisto':
                 tentativa -= 5
             elif dica == '5':
                 tentativa -= 7
-
-
+        elif palpite == 'inventario':
+            print('\nDistância:')
+            tentativa += 1
+            for termo in lista:
+                print('{0} -> {1} km'.format(termo[0], int(termo[1])))
 
         elif palpite not in dados_paises.keys():
             print('\nPaís desconhecido')
     
     jogar_novamente = input('Jogar novamente? [s/n]')
-    if jogar_novamente == 's':
-        continue
-    else:
+    palpite = ""
+    if jogar_novamente != 's':
+        palpita = ""
         print('Até a próxima!')
         break
