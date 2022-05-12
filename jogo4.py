@@ -48,7 +48,7 @@ while palpite.lower() != 'desisto':
                     longitudeA = dados_paises[palpite.lower()]['geo']['longitude']
                     latitudeB = dados_paises[sorteado]['geo']['latitude']
                     longitudeB = dados_paises[sorteado]['geo']['longitude']
-        distancias = haversine(r, latitudeA, longitudeA, latitudeB, longitudeB)
+            distancias = haversine(r, latitudeA, longitudeA, latitudeB, longitudeB)
         
         if palpite in dados_paises.keys():
             lista = adiciona_em_ordem(palpite, distancias, lista)
