@@ -1,5 +1,6 @@
 from funcoes import *
 from jogo2 import *
+import random
 
 palpite = ''
 
@@ -24,13 +25,16 @@ while palpite != 'desisto':
     lista = []
     dic = {}
     string = ''
+    lista_cor = []
+    lista_paises = []
 
     while tentativa > 0:
-        print('Um país foi escolhido, tente advinhar!')
+        print('\nUm país foi escolhido, tente advinhar!')
         print('Você tem {0} tentativa(s)'.format(tentativa))
         palpite = input('\nQual o seu palpite?')
         tentativa -= 1
         palpite = palpite.lower()
+
         
         if palpite == sorteado:
             print('\n*** Parabéns! Você ganhou após {0} tentativa(s)!'.format(20 - tentativa))
@@ -53,8 +57,11 @@ while palpite != 'desisto':
                     longitudeB = dados_paises[sorteado]['geo']['longitude']
             distancias = haversine(r, latitudeA, longitudeA, latitudeB, longitudeB)
         
-        if palpite in dados_paises.keys():
+        if palpite in dados_paises.keys() and palpite not in lista_paises:
             lista = adiciona_em_ordem(palpite, distancias, lista)
+            lista_paises.append(palpite)
+        elif palpite in dados_paises.keys() and palpite in lista_paises:
+            tentativa+=1
             
         print('\nDistância:')
 
@@ -66,11 +73,15 @@ while palpite != 'desisto':
         if palpite == 'dica':
             tentativa +=1
             print('----------------------------------------')
-            print('1. Cor da Bandeira  - custa 4 tentativas')
-            print('2. Letra da capital - custa 3 tentativas')
-            print('3. Área             - custa 6 tentativas')
-            print('4. População        - custa 5 tentativas')
-            if tentativa > 7:
+            if tentativa > 4:
+                print('1. Cor da Bandeira  - custa 4 tentativas')
+            if tentativa > 3:
+                print('2. Letra da capital - custa 3 tentativas')
+            if tentativa > 6 and 'Área' not in string:
+                print('3. Área             - custa 6 tentativas')
+            if tentativa > 5 and 'População' not in string:
+                print('4. População        - custa 5 tentativas')
+            if tentativa > 7 and 'Continente' not in string:
                 print('5. Continente       - custa 7 tentativas')
             print('0. Sem dica                             ')
             print('----------------------------------------')
@@ -81,7 +92,19 @@ while palpite != 'desisto':
                     print('Opção inválida')
                 else:    
                     break
-            if dica == '1':
+            if dica == '1' and tentativa > 4:
+                for cores in dados_paises[sorteado]['bandeira']:
+                    a = dados_paises[sorteado]['bandeira'][cores]
+                    if a > 0 and cores != 'outras':
+                        lista_cor.append(cores)
+                aleatorio = random.choice(lista_cor)
+                lista_cor.remove(aleatorio)
+                string += '\n-Cores da Bandeira: {0}'.format(aleatorio)
+                print('\nDistância:')
+                for termo in lista:
+                    print('\n{0} -> {1} km'.format(termo[0], int(termo[1])))
+                print('\nDicas:')    
+                print (string)
                 tentativa -=4
             elif dica == '2':
                 tentativa -= 3
@@ -89,14 +112,28 @@ while palpite != 'desisto':
                 dic['Área'] = dados_paises[sorteado]['area']
                 string += '\n-{0}: {1}'.format('Área', dic['Área'])
                 tentativa -= 6
+                print('\nDistância:')
+                for termo in lista:
+                    	print('\n{0} -> {1} km'.format(termo[0], int(termo[1])))
+                print('\nDicas:')
                 print(string)
             elif dica == '4' and tentativa >5:
                 dic['População'] = dados_paises[sorteado]['populacao']
                 string += '\n-População:{0}'.format(dic['População'])
                 tentativa -= 5
+                print('\nDistância:')
+                for termo in lista:
+                    print('\n{0} -> {1} km'.format(termo[0], int(termo[1])))
+                print('\nDicas:')
                 print(string)
-            elif dica == '5':
-                
+            elif dica == '5' and tentativa > 7:
+                dic['Continente'] = dados_paises[sorteado]['continente']
+                string += '\n-Continente: {0}'.format(dic['Continente'])
+                print('\nDistância:')
+                for termo in lista:
+                    print('\n{0} -> {1} km'.format(termo[0], int(termo[1])))
+                print('\nDicas:')
+                print(string)
                 tentativa -= 7
             elif dica == '0':
                 continue
@@ -106,11 +143,17 @@ while palpite != 'desisto':
             tentativa += 1
             for termo in lista:
                 print('{0} -> {1} km'.format(termo[0], int(termo[1])))
+            print('\nDicas:')
+            if dic != {}:
+                print(string)
+            
 
         elif palpite not in dados_paises.keys():
             tentativa += 1
             print('\nPaís desconhecido')
-    
+        
+    if tentativa == 0:
+        print('\n>>> Você perdeu, o país era: {0}'.format(sorteado))
     jogar_novamente = input('Jogar novamente? [s/n]')
     palpite = ""
     if jogar_novamente != 's':
